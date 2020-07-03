@@ -4,53 +4,64 @@ function Slider(slider) {
         throw new Error("Invalid or No Slider");
     }
 
-    let current;
-    let prev;
-    let next;
-
     //Select element from Slider
-    const slides = slider.querySelector('.slides');
+    this.slides = slider.querySelector('.slides');
+    this.slider = slider;
     const prevBtn = slider.querySelector(".goToPrev");
     const nextBtn = slider.querySelector(".goToNext");
 
-
-    function startSlider() {
-        current = slider.querySelector(".current") || slides.firstElementChild;
-        prev = current.previousElementSibling || slides.lastElementChild;
-        next = current.nextElementSibling || slides.firstElementChild;
-        console.log(current)
-    }
-
-    function applyClasses() {
-        current.classList.add("current");
-        prev.classList.add("prev");
-        next.classList.add("next");
-    }
-
-    //Moving Slider
-    function move(directon) {
-        const classes = ["prev", "current", "next"];
-        prev.classList.remove(...classes);
-        current.classList.remove(...classes);
-        next.classList.remove(...classes);
-
-        if (directon === 'back') {
-            [prev, current, next] = [prev.previousElementSibling || slides.lastElementChild, prev, current];
-        } else {
-            [prev, current, next] = [current, next, next.nextElementSibling || slides.firstElementChild];
-        }
-
-        applyClasses();
-    }
-
-    startSlider();
-    applyClasses();
+    //When slider created run the below methods
+    this.startSlider();
+    this.applyClasses();
 
     //Event Listener
-    prevBtn.addEventListener('click', move.bind(this, "back"));
-    nextBtn.addEventListener('click', move.bind(this, "forward"));
+    prevBtn.addEventListener('click', this.move.bind(this, "back"));
+    nextBtn.addEventListener('click', this.move.bind(this, "forward"));
 }
 
+/**
+ * Initializing Slider current, previous, next
+ */
+Slider.prototype.startSlider = function() {
+    this.current = this.slider.querySelector(".current") || this.slides.firstElementChild;
+    this.prev = this.current.previousElementSibling || this.slides.lastElementChild;
+    this.next = this.current.nextElementSibling || this.slides.firstElementChild;
+}
 
-const mySlider = Slider(document.querySelector('.slider'));
-const exampleSlider = Slider(document.querySelector(".example-slider"));
+/**
+ * Applying Classes for Prev Next current 
+*/
+Slider.prototype.applyClasses = function() {
+    this.current.classList.add("current");
+    this.prev.classList.add("prev");
+    this.next.classList.add("next");
+}
+
+/** 
+    * Moving Direction
+    * @direction either "back" or anything for forward
+*/
+Slider.prototype.move = function(directon) {
+    //Removing Classes
+    const classes = ["prev", "current", "next"];
+    this.prev.classList.remove(...classes);
+    this.current.classList.remove(...classes);
+    this.next.classList.remove(...classes);
+
+    //Reassigning Current, previous, next slides
+    if (directon === 'back') {
+        [this.prev, this.current, this.next] = [this.prev.previousElementSibling || this.slides.lastElementChild, this.prev, this.current];
+    } else {
+        [this.prev, this.current, this.next] = [this.current, this.next, this.next.nextElementSibling || this.slides.firstElementChild];
+    }
+
+    this.applyClasses();
+}
+
+const mySlider = new Slider(document.querySelector('.slider'));
+const exampleSlider = new Slider(document.querySelector(".example-slider"));
+
+/**
+ * * Further functionality can be applide by getting mySlider
+ * TODO: changing slides by listening key events
+*/
